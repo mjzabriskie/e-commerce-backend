@@ -35,7 +35,7 @@ router.get('/:id', (req, res) => {
     where: {
       id: req.params.id
     },
-    include: [
+    include: [//including associated category and tags
       {
         model: Category,
         attributes: ['category_name'],
@@ -49,7 +49,13 @@ router.get('/:id', (req, res) => {
       }
     ]
   })
-  .then(dbProductData => res.json(dbProductData))
+    .then(dbProductData => {
+      if (!dbProductData) {//making sure product exists
+        res.status(404).json({ message: 'No product found with this id' });
+        return;
+      }
+      res.json(dbProductData);
+    })
     .catch(err => {
       console.log(err);
       res.status(500).json(err);
@@ -60,10 +66,10 @@ router.get('/:id', (req, res) => {
 router.post('/', (req, res) => {
   /* req.body should look like this...
     {
-      product_name: "Basketball",
-      price: 200.00,
-      stock: 3,
-      tagIds: [1, 2, 3, 4]
+      "product_name": "Basketball",
+      "price": 200.00,
+      "stock": 3,
+      "tagIds": [1, 2, 3, 4]
     }
   */
   Product.create(req.body)
@@ -96,7 +102,7 @@ router.put('/:id', (req, res) => {
       id: req.params.id,
     },
   })
-    .then((/*product*/) => {
+    .then(() => {
       // find all associated tags from ProductTag
       return ProductTag.findAll({ where: { product_id: req.params.id } });
     })
@@ -138,7 +144,7 @@ router.delete('/:id', (req, res) => {
     }
   })
     .then(dbProductData => {
-      if (!dbProductData) {
+      if (!dbProductData) {//check to make sure product exists
         res.status(404).json({ message: 'No product found with this id' });
         return;
       }

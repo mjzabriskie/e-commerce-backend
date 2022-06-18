@@ -6,7 +6,7 @@ const { Category, Product } = require('../../models');
 router.get('/', (req, res) => {
   // find all categories
   Category.findAll({
-    include: [
+    include: [//including associated Products
       {
         model: Product,
         as: 'products'
@@ -18,34 +18,32 @@ router.get('/', (req, res) => {
       console.log(err);
       res.status(500).json(err);
     });
-  // be sure to include its associated Products
 });
 
 router.get('/:id', (req, res) => {
   // find one category by its `id` value
   Category.findOne({
-      where: {
-        id: req.params.id
-      },
-      include: [
-        {
-          model: Product,
-          as: 'products'
-        }
-      ]
-    })
+    where: {
+      id: req.params.id
+    },
+    include: [//including associated Products
+      {
+        model: Product,
+        as: 'products'
+      }
+    ]
+  })
     .then(dbCategoryData => {
-      if (!dbCategoryData) {
-          res.status(404).json({ message: 'No category found with this id' });
-          return;
+      if (!dbCategoryData) {//Checking to make sure id exists
+        res.status(404).json({ message: 'No category found with this id' });
+        return;
       }
       res.json(dbCategoryData);
-  })
-  .catch(err => {
+    })
+    .catch(err => {
       console.log(err);
       res.status(500).json(err);
-  });
-  // be sure to include its associated Products
+    });
 });
 
 router.post('/', (req, res) => {
@@ -68,7 +66,7 @@ router.put('/:id', (req, res) => {
     }
   })
     .then(dbCategoryData => {
-      if (!dbCategoryData[0]) {
+      if (!dbCategoryData[0]) {//checking to make sure id exists
         res.status(404).json({ message: 'No category found with this id' });
         return;
       }
@@ -88,7 +86,7 @@ router.delete('/:id', (req, res) => {
     }
   })
     .then(dbCategoryData => {
-      if (!dbCategoryData) {
+      if (!dbCategoryData) {//check to make sure id exists
         res.status(404).json({ message: 'No category found with this id' });
         return;
       }

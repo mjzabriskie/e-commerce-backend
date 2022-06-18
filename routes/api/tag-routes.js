@@ -7,7 +7,7 @@ const { Tag, Product, ProductTag } = require('../../models');
 router.get('/', (req, res) => {
   // find all tags
   Tag.findAll({
-    include: {
+    include: {//including associated product data
       model: Product,
       through: ProductTag,
       as: 'products'
@@ -18,7 +18,6 @@ router.get('/', (req, res) => {
       console.log(err);
       res.status(500).json(err);
     });
-  // be sure to include its associated Product data
 });
 
 router.get('/:id', (req, res) => {
@@ -27,14 +26,14 @@ router.get('/:id', (req, res) => {
     where: {
       id: req.params.id
     },
-    include: {
+    include: {//including associated product data
       model: Product,
       through: ProductTag,
       as: 'products'
     }
   })
     .then(dbTagData => {
-      if (!dbTagData) {
+      if (!dbTagData) {//check to make sure tag exists
         res.status(404).json({ message: 'No tag found with this id' });
         return;
       }
@@ -44,7 +43,6 @@ router.get('/:id', (req, res) => {
       console.log(err);
       res.status(500).json(err);
     });
-  // be sure to include its associated Product data
 });
 
 router.post('/', (req, res) => {
@@ -67,7 +65,7 @@ router.put('/:id', (req, res) => {
     }
   })
     .then(dbTagData => {
-      if (!dbTagData[0]) {
+      if (!dbTagData[0]) {//check to make sure tag exists
         res.status(404).json({ message: 'No tag found with this id' });
         return;
       }
@@ -87,7 +85,7 @@ router.delete('/:id', (req, res) => {
     }
   })
     .then(dbTagData => {
-      if (!dbTagData) {
+      if (!dbTagData) {//check to make sure tag exists
         res.status(404).json({ message: 'No tag found with this id' });
         return;
       }
